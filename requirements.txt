@@ -1,0 +1,10 @@
+Flask==2.0.3
+Werkzeug==2.0.3
+Flask-PyMongo==2.3.0
+Flask-JWT-Extended==4.4.4
+Flask-APScheduler==1.12.4
+python-dotenv==0.21.0
+Flask-Mail==0.10.0
+cloudinary==1.41.0
+
+mongoengine==0.28.2
