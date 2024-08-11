@@ -8,3 +8,4 @@ Flask-Mail==0.10.0
 cloudinary==1.41.0
 
 mongoengine==0.28.2
+flasgger

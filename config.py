@@ -6,6 +6,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+import mongoengine
 # Load environment variables from a .env file
 load_dotenv()
 
@@ -46,3 +47,6 @@ def init_cloudinary(app):
         api_key=app.config['API_KEY'],
         api_secret=app.config['API_SECRET']
 )
+
+def init_orm_db(app):
+    mongoengine.connect(host=app.config['MONGO_URI'])
