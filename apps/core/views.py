@@ -8,6 +8,11 @@ from .serializers import (
     ProductUpdateSerializer, ProductListSerializer
 )
 
+from rest_framework.parsers import MultiPartParser, FormParser
+from .services import MediaService
+from .serializers import MediaFileSerializer, FileUploadSerializer
+
+
 class ProductListView(APIView):
     def get(self, request):
         # Get query parameters
@@ -93,3 +98,34 @@ class ProductDetailView(APIView):
         
         product_service.delete_product(product_id)
         return Response({'message': 'Product deleted successfully'}, status=status.HTTP_200_OK)
+
+class MediaUploadView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def post(self, request):
+        serializer = FileUploadSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        media_service = MediaService()
+        uploaded_files = []
+        
+        # Handle single file upload
+        if 'file' in request.FILES:
+            uploaded_file = media_service.upload_file(request.FILES['file'], request.auth_user)
+            uploaded_files.append(uploaded_file)
+        
+        # Handle multiple files upload
+        if 'files' in request.FILES:
+            multiple_files = media_service.upload_multiple_files(request.FILES.getlist('files'), request.auth_user)
+            uploaded_files.extend(multiple_files)
+        
+        # Serialize the response
+        response_serializer = MediaFileSerializer(uploaded_files, many=True)
+        
+        return Response({
+            'message': 'Files uploaded successfully',
+            'uploaded_files': response_serializer.data,
+            'total_files': len(uploaded_files)
+        }, status=status.HTTP_201_CREATED)
